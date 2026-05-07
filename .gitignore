@@ -1,5 +1,6 @@
 .gradle
 build
+bin
 .idea/
 .project
 .settings/
@@ -7,3 +8,5 @@ build
 nbactions.xml
 nb-configuration.xml
 nbproject/
+AGENTS.md
+CLAUDE.md
