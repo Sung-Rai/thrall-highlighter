@@ -24,7 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.thrallHider;
+package com.thrallHighlighter;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
@@ -53,9 +53,9 @@ import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Thrall Hider"
+	name = "Thrall Highlighter"
 )
-public class thrallHiderPlugin extends Plugin implements RenderCallback
+public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 {
 	private static final Set<Integer> THRALL_IDS = ImmutableSet.of(
 		NpcID.ARCEUUS_THRALL_GHOST_LESSER, NpcID.ARCEUUS_THRALL_SKELETON_LESSER, NpcID.ARCEUUS_THRALL_ZOMBIE_LESSER,  // Lesser Thrall (ghost, skeleton, zombie)
@@ -79,7 +79,7 @@ public class thrallHiderPlugin extends Plugin implements RenderCallback
 	private Client client;
 
 	@Inject
-	private thrallHiderConfig config;
+	private thrallHighlighterConfig config;
 
 	@Inject
 	private RenderCallbackManager renderCallbackManager;
@@ -138,7 +138,7 @@ public class thrallHiderPlugin extends Plugin implements RenderCallback
 	@Subscribe
 	public void onConfigChanged(ConfigChanged e)
 	{
-		if (e.getGroup().equals(thrallHiderConfig.GROUP))
+		if (e.getGroup().equals(thrallHighlighterConfig.GROUP))
 		{
 			updateConfig();
 		}
@@ -150,9 +150,9 @@ public class thrallHiderPlugin extends Plugin implements RenderCallback
 	}
 
 	@Provides
-	thrallHiderConfig provideConfig(ConfigManager configManager)
+	thrallHighlighterConfig provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(thrallHiderConfig.class);
+		return configManager.getConfig(thrallHighlighterConfig.class);
 	}
 
 	private Color getThrallColor(NPC npc)

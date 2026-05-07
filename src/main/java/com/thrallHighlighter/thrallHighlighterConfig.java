@@ -24,17 +24,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.thrallHider;
+package com.thrallHighlighter;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import java.awt.Color;
 
-@ConfigGroup(thrallHiderConfig.GROUP)
-public interface thrallHiderConfig extends Config
+@ConfigGroup(thrallHighlighterConfig.GROUP)
+public interface thrallHighlighterConfig extends Config
 {
-	String GROUP = "thrall-hider";
+	String GROUP = "thrall-highlighter";
 
 	@ConfigItem(
 		position = 1,
@@ -44,7 +44,7 @@ public interface thrallHiderConfig extends Config
 	)
 	default boolean hideThralls()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(
@@ -55,7 +55,7 @@ public interface thrallHiderConfig extends Config
 	)
 	default boolean outlineThralls()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(

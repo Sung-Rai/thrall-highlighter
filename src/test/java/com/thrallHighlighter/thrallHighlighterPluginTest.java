@@ -24,16 +24,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.thrallHider;
+package com.thrallHighlighter;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class thrallHiderPluginTest
+public class thrallHighlighterPluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(thrallHiderPlugin.class);
+		ExternalPluginManager.loadBuiltin(thrallHighlighterPlugin.class);
 		RuneLite.main(args);
 	}
 }
