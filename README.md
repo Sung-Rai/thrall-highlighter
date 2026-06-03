@@ -11,7 +11,9 @@ The purpose of this plugin is to have a single plugin that consolidates the usef
 - Thrall Type Specific Colours **(new!)**
 
 ### Configure Menu
-<img width="233" height="329" alt="{9AE8C07E-15F8-4ED7-9AEB-73A191583E74}" src="https://github.com/user-attachments/assets/f25057cc-709b-40c8-b2e4-b835b467dec3" />
+<img width="233" height="329" alt="{
+                                Configure Menu showing: Hide Thrall, Outline Thrall, Outline Color, Outline Width, Enable Thrall Type Override, Ghost Thrall Color, Skeletal Thrall Color, Zombie Thrall Color.
+                            }" src="./assets/configure_menu_01.png" />
 
 ## Bugs and Others
 
