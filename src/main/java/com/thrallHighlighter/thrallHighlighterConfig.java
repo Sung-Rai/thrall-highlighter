@@ -94,8 +94,8 @@ public interface thrallHighlighterConfig extends Config
 	@ConfigItem(
 		position = 6,
 		keyName = "ghostThrallColor",
-		name = "Ghost Thrall Color",
-		description = "Color for ghost (mage) thralls when type override is enabled"
+		name = "Magic Thrall Color",
+		description = "Color for Magic (ghost) thralls when type override is enabled"
 	)
 	default Color ghostThrallColor()
 	{
@@ -105,8 +105,8 @@ public interface thrallHighlighterConfig extends Config
 	@ConfigItem(
 		position = 7,
 		keyName = "skeletonThrallColor",
-		name = "Skeleton Thrall Color",
-		description = "Color for skeleton (range) thralls when type override is enabled"
+		name = "Ranged Thrall Color",
+		description = "Color for Ranged (skeleton) thralls when type override is enabled"
 	)
 	default Color skeletonThrallColor()
 	{
@@ -116,8 +116,8 @@ public interface thrallHighlighterConfig extends Config
 	@ConfigItem(
 		position = 8,
 		keyName = "zombieThrallColor",
-		name = "Zombie Thrall Color",
-		description = "Color for zombie (melee) thralls when type override is enabled"
+		name = "Melee Thrall Color",
+		description = "Color for Melee (zombie) thralls when type override is enabled"
 	)
 	default Color zombieThrallColor()
 	{
