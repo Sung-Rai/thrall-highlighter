@@ -31,7 +31,9 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.inject.Inject;
 
@@ -109,11 +111,15 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 	private ModelOutlineRenderer modelOutlineRenderer;
 
 	private final Set<NPC> activeThralls = Collections.newSetFromMap(new IdentityHashMap<>());
+	private final Map<NPC, Color> randomBaseColors = new IdentityHashMap<>();
+	private final Map<NPC, Color> randomOutlineColors = new IdentityHashMap<>();
 
 	private boolean hideThralls;
 	private boolean outlineThralls;
 	private boolean enableThrallTypeOverride;
+	private boolean randomOutlineColor;
 	private int outlineWidth;
+	private int outlineOpacity;
 	private Color outlineColor;
 	private Color ghostThrallColor;
 	private Color skeletonThrallColor;
@@ -139,7 +145,16 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 			{
 				if (!npc.isDead())
 				{
-					Color color = enableThrallTypeOverride ? getThrallColor(npc) : outlineColor;
+					Color color;
+					if (randomOutlineColor)
+					{
+						color = getRandomOutlineColor(npc);
+					}
+					else
+					{
+						color = enableThrallTypeOverride ? getThrallColor(npc) : outlineColor;
+					}
+
 					modelOutlineRenderer.drawOutline(npc, outlineWidth, color, 0);
 				}
 			}
@@ -163,6 +178,8 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 		renderCallbackManager.unregister(this);
 		overlayManager.remove(thrallOutlineOverlay);
 		activeThralls.clear();
+		randomBaseColors.clear();
+		randomOutlineColors.clear();
 	}
 
 	@Subscribe
@@ -195,13 +212,18 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 		else
 		{
 			activeThralls.remove(npc);
+			randomBaseColors.remove(npc);
+			randomOutlineColors.remove(npc);
 		}
 	}
 
 	@Subscribe
 	public void onNpcDespawned(NpcDespawned e)
 	{
-		activeThralls.remove(e.getNpc());
+		NPC npc = e.getNpc();
+		activeThralls.remove(npc);
+		randomBaseColors.remove(npc);
+		randomOutlineColors.remove(npc);
 	}
 
 	private void updateConfig()
@@ -211,7 +233,21 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 		enableThrallTypeOverride = config.enableThrallTypeOverride();
 		outlineWidth = config.outlineWidth();
 
-		int outlineOpacity = config.outlineOpacity();
+		boolean newRandomOutlineColor = config.randomOutlineColor();
+		if (randomOutlineColor != newRandomOutlineColor)
+		{
+			randomBaseColors.clear();
+			randomOutlineColors.clear();
+			randomOutlineColor = newRandomOutlineColor;
+		}
+
+		int newOutlineOpacity = config.outlineOpacity();
+		if (outlineOpacity != newOutlineOpacity)
+		{
+			outlineOpacity = newOutlineOpacity;
+			randomOutlineColors.clear();
+		}
+
 		outlineColor = applyOpacity(config.outlineColor(), outlineOpacity);
 		ghostThrallColor = applyOpacity(config.ghostThrallColor(), outlineOpacity);
 		skeletonThrallColor = applyOpacity(config.skeletonThrallColor(), outlineOpacity);
@@ -254,6 +290,21 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 		}
 
 		return outlineColor;
+	}
+
+	private Color getRandomOutlineColor(NPC npc)
+	{
+		return randomOutlineColors.computeIfAbsent(npc, ignored ->
+		{
+			Color baseColor = randomBaseColors.computeIfAbsent(npc, key -> generateRandomColor());
+			return applyOpacity(baseColor, outlineOpacity);
+		});
+	}
+
+	private static Color generateRandomColor()
+	{
+		float hue = ThreadLocalRandom.current().nextFloat();
+		return Color.getHSBColor(hue, 0.85f, 1.0f);
 	}
 
 	private static Color applyOpacity(Color configuredColor, int opacityPercent)

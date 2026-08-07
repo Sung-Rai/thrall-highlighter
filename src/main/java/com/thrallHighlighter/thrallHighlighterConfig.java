@@ -32,12 +32,21 @@ import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 
 @ConfigGroup(thrallHighlighterConfig.GROUP)
 public interface thrallHighlighterConfig extends Config
 {
 	String GROUP = "thrall-highlighter";
+
+	@ConfigSection(
+		name = "Fun Options",
+		description = "Optional fun visual effects",
+		position = 10,
+		closedByDefault = true
+	)
+	String funOptions = "funOptions";
 
 	@ConfigItem(
 		position = 1,
@@ -144,5 +153,17 @@ public interface thrallHighlighterConfig extends Config
 	default Color zombieThrallColor()
 	{
 		return Color.RED;
+	}
+
+	@ConfigItem(
+		position = 0,
+		keyName = "randomOutlineColor",
+		name = "Random Outline Color",
+		description = "Give each generated thrall a random outline color",
+		section = funOptions
+	)
+	default boolean randomOutlineColor()
+	{
+		return false;
 	}
 }
