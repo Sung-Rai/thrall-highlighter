@@ -29,6 +29,8 @@ package com.thrallHighlighter;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -40,6 +42,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.Renderable;
+import net.runelite.api.events.NpcChanged;
+import net.runelite.api.events.NpcDespawned;
+import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.gameval.NpcID;
 import net.runelite.client.callback.RenderCallback;
 import net.runelite.client.callback.RenderCallbackManager;
@@ -103,7 +108,16 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 	@Inject
 	private ModelOutlineRenderer modelOutlineRenderer;
 
+	private final Set<NPC> activeThralls = Collections.newSetFromMap(new IdentityHashMap<>());
+
 	private boolean hideThralls;
+	private boolean outlineThralls;
+	private boolean enableThrallTypeOverride;
+	private int outlineWidth;
+	private Color outlineColor;
+	private Color ghostThrallColor;
+	private Color skeletonThrallColor;
+	private Color zombieThrallColor;
 
 	private final Overlay thrallOutlineOverlay = new Overlay()
 	{
@@ -116,17 +130,17 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 		@Override
 		public Dimension render(Graphics2D graphics)
 		{
-			if (!config.outlineThralls())
+			if (!outlineThralls)
 			{
 				return null;
 			}
-			for (NPC npc : client.getWorldView(-1).npcs())
+
+			for (NPC npc : activeThralls)
 			{
-				if (THRALL_IDS.contains(npc.getId()) && !npc.isDead())
+				if (!npc.isDead())
 				{
-					Color configuredColor = config.enableThrallTypeOverride() ? getThrallColor(npc) : config.outlineColor();
-					Color outlineColor = applyOpacity(configuredColor, config.outlineOpacity());
-					modelOutlineRenderer.drawOutline(npc, config.outlineWidth(), outlineColor, 0);
+					Color color = enableThrallTypeOverride ? getThrallColor(npc) : outlineColor;
+					modelOutlineRenderer.drawOutline(npc, outlineWidth, color, 0);
 				}
 			}
 
@@ -138,6 +152,7 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 	protected void startUp() throws Exception
 	{
 		updateConfig();
+		initializeActiveThralls();
 		renderCallbackManager.register(this);
 		overlayManager.add(thrallOutlineOverlay);
 	}
@@ -147,6 +162,7 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 	{
 		renderCallbackManager.unregister(this);
 		overlayManager.remove(thrallOutlineOverlay);
+		activeThralls.clear();
 	}
 
 	@Subscribe
@@ -158,9 +174,60 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 		}
 	}
 
+	@Subscribe
+	public void onNpcSpawned(NpcSpawned e)
+	{
+		NPC npc = e.getNpc();
+		if (THRALL_IDS.contains(npc.getId()))
+		{
+			activeThralls.add(npc);
+		}
+	}
+
+	@Subscribe
+	public void onNpcChanged(NpcChanged e)
+	{
+		NPC npc = e.getNpc();
+		if (THRALL_IDS.contains(npc.getId()))
+		{
+			activeThralls.add(npc);
+		}
+		else
+		{
+			activeThralls.remove(npc);
+		}
+	}
+
+	@Subscribe
+	public void onNpcDespawned(NpcDespawned e)
+	{
+		activeThralls.remove(e.getNpc());
+	}
+
 	private void updateConfig()
 	{
 		hideThralls = config.hideThralls();
+		outlineThralls = config.outlineThralls();
+		enableThrallTypeOverride = config.enableThrallTypeOverride();
+		outlineWidth = config.outlineWidth();
+
+		int outlineOpacity = config.outlineOpacity();
+		outlineColor = applyOpacity(config.outlineColor(), outlineOpacity);
+		ghostThrallColor = applyOpacity(config.ghostThrallColor(), outlineOpacity);
+		skeletonThrallColor = applyOpacity(config.skeletonThrallColor(), outlineOpacity);
+		zombieThrallColor = applyOpacity(config.zombieThrallColor(), outlineOpacity);
+	}
+
+	private void initializeActiveThralls()
+	{
+		activeThralls.clear();
+		for (NPC npc : client.getWorldView(-1).npcs())
+		{
+			if (THRALL_IDS.contains(npc.getId()))
+			{
+				activeThralls.add(npc);
+			}
+		}
 	}
 
 	@Provides
@@ -175,18 +242,18 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 
 		if (GHOST_THRALL_IDS.contains(npcId))
 		{
-			return config.ghostThrallColor();
+			return ghostThrallColor;
 		}
 		else if (SKELETON_THRALL_IDS.contains(npcId))
 		{
-			return config.skeletonThrallColor();
+			return skeletonThrallColor;
 		}
 		else if (ZOMBIE_THRALL_IDS.contains(npcId))
 		{
-			return config.zombieThrallColor();
+			return zombieThrallColor;
 		}
 
-		return config.outlineColor();
+		return outlineColor;
 	}
 
 	private static Color applyOpacity(Color configuredColor, int opacityPercent)
