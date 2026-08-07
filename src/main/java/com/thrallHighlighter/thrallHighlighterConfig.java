@@ -28,6 +28,7 @@ package com.thrallHighlighter;
 
 import java.awt.Color;
 
+import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -60,6 +61,7 @@ public interface thrallHighlighterConfig extends Config
 		return true;
 	}
 
+	@Alpha
 	@ConfigItem(
 		position = 3,
 		keyName = "outlineColor",
@@ -90,7 +92,7 @@ public interface thrallHighlighterConfig extends Config
 		position = 5,
 		keyName = "outlineOpacity",
 		name = "Outline Opacity",
-		description = "Opacity of the thrall outline as a percentage"
+		description = "Global opacity multiplier for the thrall outline as a percentage"
 	)
 	default int outlineOpacity()
 	{
@@ -108,6 +110,7 @@ public interface thrallHighlighterConfig extends Config
 		return false;
 	}
 
+	@Alpha
 	@ConfigItem(
 		position = 7,
 		keyName = "ghostThrallColor",
@@ -119,6 +122,7 @@ public interface thrallHighlighterConfig extends Config
 		return Color.CYAN;
 	}
 
+	@Alpha
 	@ConfigItem(
 		position = 8,
 		keyName = "skeletonThrallColor",
@@ -130,6 +134,7 @@ public interface thrallHighlighterConfig extends Config
 		return Color.GREEN;
 	}
 
+	@Alpha
 	@ConfigItem(
 		position = 9,
 		keyName = "zombieThrallColor",

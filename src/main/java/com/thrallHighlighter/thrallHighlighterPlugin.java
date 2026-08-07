@@ -53,6 +53,7 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
+import net.runelite.client.util.ColorUtil;
 
 @Slf4j
 @PluginDescriptor(
@@ -123,8 +124,8 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 			{
 				if (THRALL_IDS.contains(npc.getId()) && !npc.isDead())
 				{
-					Color outlineColor = config.outlineThralls() && config.enableThrallTypeOverride() ? getThrallColor(npc) : config.outlineColor();
-					outlineColor = applyOpacity(outlineColor, config.outlineOpacity());
+					Color configuredColor = config.enableThrallTypeOverride() ? getThrallColor(npc) : config.outlineColor();
+					Color outlineColor = applyOpacity(configuredColor, config.outlineOpacity());
 					modelOutlineRenderer.drawOutline(npc, config.outlineWidth(), outlineColor, 0);
 				}
 			}
@@ -188,11 +189,14 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 		return config.outlineColor();
 	}
 
-	private static Color applyOpacity(Color color, int opacityPercent)
+	private static Color applyOpacity(Color configuredColor, int opacityPercent)
 	{
 		int clampedOpacity = Math.max(0, Math.min(100, opacityPercent));
-		int alpha = Math.round(clampedOpacity * 255 / 100.0f);
-		return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+		int pickerAlpha = configuredColor.getAlpha();
+		int globalAlpha = Math.round(255 * clampedOpacity / 100.0f);
+		int combinedAlpha = Math.round(pickerAlpha * globalAlpha / 255.0f);
+
+		return ColorUtil.colorWithAlpha(configuredColor, combinedAlpha);
 	}
 
 	@Override
