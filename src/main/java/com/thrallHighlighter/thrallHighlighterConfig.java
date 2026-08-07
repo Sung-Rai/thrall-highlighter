@@ -26,10 +26,12 @@
  */
 package com.thrallHighlighter;
 
+import java.awt.Color;
+
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import java.awt.Color;
+import net.runelite.client.config.Range;
 
 @ConfigGroup(thrallHighlighterConfig.GROUP)
 public interface thrallHighlighterConfig extends Config
@@ -80,8 +82,23 @@ public interface thrallHighlighterConfig extends Config
 		return 1;
 	}
 
+	@Range(
+		min = 0,
+		max = 100
+	)
 	@ConfigItem(
 		position = 5,
+		keyName = "outlineOpacity",
+		name = "Outline Opacity",
+		description = "Opacity of the thrall outline as a percentage"
+	)
+	default int outlineOpacity()
+	{
+		return 100;
+	}
+
+	@ConfigItem(
+		position = 6,
 		keyName = "enableThrallTypeOverride",
 		name = "Enable Thrall Type Override",
 		description = "Use unique colors for different thrall types (ghost, skeleton, zombie)"
@@ -92,7 +109,7 @@ public interface thrallHighlighterConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 6,
+		position = 7,
 		keyName = "ghostThrallColor",
 		name = "Magic Thrall Color",
 		description = "Color for Magic (ghost) thralls when type override is enabled"
@@ -103,7 +120,7 @@ public interface thrallHighlighterConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 7,
+		position = 8,
 		keyName = "skeletonThrallColor",
 		name = "Ranged Thrall Color",
 		description = "Color for Ranged (skeleton) thralls when type override is enabled"
@@ -114,7 +131,7 @@ public interface thrallHighlighterConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 8,
+		position = 9,
 		keyName = "zombieThrallColor",
 		name = "Melee Thrall Color",
 		description = "Color for Melee (zombie) thralls when type override is enabled"

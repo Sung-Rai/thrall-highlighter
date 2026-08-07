@@ -26,13 +26,16 @@
  */
 package com.thrallHighlighter;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.inject.Provides;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.Set;
+
 import javax.inject.Inject;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.inject.Provides;
+
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -45,9 +48,9 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
@@ -121,6 +124,7 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 				if (THRALL_IDS.contains(npc.getId()) && !npc.isDead())
 				{
 					Color outlineColor = config.outlineThralls() && config.enableThrallTypeOverride() ? getThrallColor(npc) : config.outlineColor();
+					outlineColor = applyOpacity(outlineColor, config.outlineOpacity());
 					modelOutlineRenderer.drawOutline(npc, config.outlineWidth(), outlineColor, 0);
 				}
 			}
@@ -182,6 +186,13 @@ public class thrallHighlighterPlugin extends Plugin implements RenderCallback
 		}
 
 		return config.outlineColor();
+	}
+
+	private static Color applyOpacity(Color color, int opacityPercent)
+	{
+		int clampedOpacity = Math.max(0, Math.min(100, opacityPercent));
+		int alpha = Math.round(clampedOpacity * 255 / 100.0f);
+		return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
 	}
 
 	@Override
